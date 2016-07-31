@@ -15,6 +15,9 @@
 		5EFF2C641D4DEF1A0018DB6F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5EFF2C621D4DEF1A0018DB6F /* LaunchScreen.storyboard */; };
 		5EFF2C6F1D4DEF1A0018DB6F /* VideoEditorTestTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EFF2C6E1D4DEF1A0018DB6F /* VideoEditorTestTests.m */; };
 		5EFF2C7A1D4DEF1A0018DB6F /* VideoEditorTestUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EFF2C791D4DEF1A0018DB6F /* VideoEditorTestUITests.m */; };
+		5EFF2C8B1D4DEFBB0018DB6F /* CDPVideoEditor.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EFF2C891D4DEFBB0018DB6F /* CDPVideoEditor.m */; };
+		5EFF2C8F1D4DEFEA0018DB6F /* One.m4v in Resources */ = {isa = PBXBuildFile; fileRef = 5EFF2C8E1D4DEFEA0018DB6F /* One.m4v */; };
+		5EFF2C911D4DF8B00018DB6F /* Two.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 5EFF2C901D4DF8B00018DB6F /* Two.mp4 */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -51,6 +54,10 @@
 		5EFF2C751D4DEF1A0018DB6F /* VideoEditorTestUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VideoEditorTestUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		5EFF2C791D4DEF1A0018DB6F /* VideoEditorTestUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VideoEditorTestUITests.m; sourceTree = "<group>"; };
 		5EFF2C7B1D4DEF1A0018DB6F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		5EFF2C881D4DEFBB0018DB6F /* CDPVideoEditor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CDPVideoEditor.h; sourceTree = "<group>"; };
+		5EFF2C891D4DEFBB0018DB6F /* CDPVideoEditor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CDPVideoEditor.m; sourceTree = "<group>"; };
+		5EFF2C8E1D4DEFEA0018DB6F /* One.m4v */ = {isa = PBXFileReference; lastKnownFileType = file; path = One.m4v; sourceTree = "<group>"; };
+		5EFF2C901D4DF8B00018DB6F /* Two.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = Two.mp4; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -81,6 +88,8 @@
 		5EFF2C481D4DEF1A0018DB6F = {
 			isa = PBXGroup;
 			children = (
+				5EFF2C871D4DEFBB0018DB6F /* CDPVideoEditor */,
+				5EFF2C8D1D4DEFEA0018DB6F /* VideoResource */,
 				5EFF2C531D4DEF1A0018DB6F /* VideoEditorTest */,
 				5EFF2C6D1D4DEF1A0018DB6F /* VideoEditorTestTests */,
 				5EFF2C781D4DEF1A0018DB6F /* VideoEditorTestUITests */,
@@ -138,6 +147,24 @@
 				5EFF2C7B1D4DEF1A0018DB6F /* Info.plist */,
 			);
 			path = VideoEditorTestUITests;
+			sourceTree = "<group>";
+		};
+		5EFF2C871D4DEFBB0018DB6F /* CDPVideoEditor */ = {
+			isa = PBXGroup;
+			children = (
+				5EFF2C881D4DEFBB0018DB6F /* CDPVideoEditor.h */,
+				5EFF2C891D4DEFBB0018DB6F /* CDPVideoEditor.m */,
+			);
+			path = CDPVideoEditor;
+			sourceTree = "<group>";
+		};
+		5EFF2C8D1D4DEFEA0018DB6F /* VideoResource */ = {
+			isa = PBXGroup;
+			children = (
+				5EFF2C8E1D4DEFEA0018DB6F /* One.m4v */,
+				5EFF2C901D4DF8B00018DB6F /* Two.mp4 */,
+			);
+			path = VideoResource;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -243,8 +270,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5EFF2C911D4DF8B00018DB6F /* Two.mp4 in Resources */,
 				5EFF2C641D4DEF1A0018DB6F /* LaunchScreen.storyboard in Resources */,
 				5EFF2C611D4DEF1A0018DB6F /* Assets.xcassets in Resources */,
+				5EFF2C8F1D4DEFEA0018DB6F /* One.m4v in Resources */,
 				5EFF2C5F1D4DEF1A0018DB6F /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -270,6 +299,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5EFF2C8B1D4DEFBB0018DB6F /* CDPVideoEditor.m in Sources */,
 				5EFF2C5C1D4DEF1A0018DB6F /* ViewController.m in Sources */,
 				5EFF2C591D4DEF1A0018DB6F /* AppDelegate.m in Sources */,
 				5EFF2C561D4DEF1A0018DB6F /* main.m in Sources */,
@@ -364,7 +394,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -403,7 +433,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -416,6 +446,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = VideoEditorTest/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = CDP.VideoEditorTest;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -427,6 +458,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = VideoEditorTest/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = CDP.VideoEditorTest;
 				PRODUCT_NAME = "$(TARGET_NAME)";
