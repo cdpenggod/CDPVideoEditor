@@ -48,10 +48,11 @@ typedef enum{
 
 
 /**
- *  合并视频(合并失败asset返回nil,如果有一个视频的ImageOrientation为UIImageOrientationDown向下,而另一个并非UIImageOrientationDown向下,则合成后播放到ImageOrientationDown视频时，其中心位置有可能不在屏幕中心)
+ *  合并视频(合并失败asset返回nil)
  *  originalVideoUrl 被合并入的视频URL(合并后首先播放)
  *  otherVideoUrl 要合并进OriginalVideo的视频URL(合并后在originalVideo后面播放)
  *  completion 执行结束block回调
+ *  如果有一个视频的ImageOrientation为UIImageOrientationDown向下,而另一个并非UIImageOrientationDown向下,则合成后播放到ImageOrientationDown视频时，仍能正常播放和全部显示，只是其中心位置有可能不在屏幕中心
  */
 +(void)composeWithOriginalVideoUrl:(NSURL *)originalVideoUrl otherVideoUrl:(NSURL *)otherVideoUrl completion:(void(^)(BOOL success,NSString *error,AVAsset *asset,AVMutableAudioMix *audioMix,AVMutableVideoComposition *videoComposition))block;
 /**
