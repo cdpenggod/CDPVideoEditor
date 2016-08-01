@@ -5,6 +5,7 @@
 //  Created by 柴东鹏 on 16/7/27.
 //  Copyright © 2016年 CDP. All rights reserved.
 //
+//https://github.com/cdpenggod/CDPVideoEditor.git
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
