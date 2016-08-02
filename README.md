@@ -12,3 +12,5 @@ An video editor,can trim a video or compose two video, and export video to the l
 ## Compressed and Export video
 +(void)exportWithVideoUrl:(nonnull NSURL *)videoUrl saveToLibrary:(BOOL)isSave exportQuality:(CDPVideoEditorExportQuality)exportQuality;
 
+## Write an video to photo library
++(void)writeVideoToPhotoLibrary:(nonnull NSURL *)url;
