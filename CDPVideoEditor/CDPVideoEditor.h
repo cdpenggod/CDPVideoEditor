@@ -78,18 +78,21 @@ typedef enum{
 
 
 /**
- *  导出视频(在进行异步导出视频时会禁止用户屏幕交互,否则可能导致失败,exportQuality质量越高所耗时间越长)
- *  isSave 导出视频是否自动保存到本地照片库
- *  exportQuality 导出视频质量
+ *  压缩导出视频(在进行异步压缩导出视频时会禁止用户屏幕交互,否则可能导致失败,exportQuality质量越高所耗时间越长)
+ *  videoUrl 视频URL
+ *  isSave 压缩导出视频后是否自动保存到本地照片库
+ *  exportQuality 压缩导出视频质量
  */
-+(void)exportAsset:(nonnull AVAsset *)asset saveToLibrary:(BOOL)isSave exportQuality:(CDPVideoEditorExportQuality)exportQuality;
++(void)exportWithVideoUrl:(nonnull NSURL *)videoUrl saveToLibrary:(BOOL)isSave exportQuality:(CDPVideoEditorExportQuality)exportQuality;
+
 /**
  *  参考exportAsset: saveToLibrary: exportQuality:类方法
+ *  asset 视频Asset对象
  *  audioMix 音频混合器
  *  videoComposition 视频混合器
  */
++(void)exportAsset:(nonnull AVAsset *)asset saveToLibrary:(BOOL)isSave exportQuality:(CDPVideoEditorExportQuality)exportQuality;
 +(void)exportAsset:(nonnull AVAsset *)asset audioMix:(nullable AVMutableAudioMix *)audioMix videoComposition:(nullable AVMutableVideoComposition *)videoComposition saveToLibrary:(BOOL)isSave exportQuality:(CDPVideoEditorExportQuality)exportQuality;
-
 
 /**
  *  根据视频url地址将其保存到本地照片库
