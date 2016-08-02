@@ -377,15 +377,24 @@
         block(YES,@"",composition);
     }
 }
-#pragma mark - 视频导出
+#pragma mark - 压缩视频导出
++(void)exportWithVideoUrl:(nonnull NSURL *)videoUrl saveToLibrary:(BOOL)isSave exportQuality:(CDPVideoEditorExportQuality)exportQuality{
+    if (videoUrl==nil||[videoUrl isKindOfClass:[NSNull class]]) {
+        CDPLog(@"视频压缩导出:传入的videoUrl为nil");
+        [CDPNotificationCenter postNotificationName:CDPVideoEditorExportFail object:@"视频压缩导出:传入的videoUrl为nil"];
+        return;
+    }
+    AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:videoUrl options:nil];
+    [self exportAsset:asset audioMix:nil videoComposition:nil saveToLibrary:isSave exportQuality:exportQuality];
+}
 +(void)exportAsset:(nonnull AVAsset *)asset saveToLibrary:(BOOL)isSave exportQuality:(CDPVideoEditorExportQuality)exportQuality{
     [self exportAsset:asset audioMix:nil videoComposition:nil saveToLibrary:isSave exportQuality:exportQuality];
 }
 +(void)exportAsset:(nonnull AVAsset *)asset audioMix:(nullable AVMutableAudioMix *)audioMix videoComposition:(nullable AVMutableVideoComposition *)videoComposition saveToLibrary:(BOOL)isSave exportQuality:(CDPVideoEditorExportQuality)exportQuality{
     
     if (asset==nil||[asset isKindOfClass:[NSNull class]]) {
-        CDPLog(@"视频导出:传入的AVAsset为nil");
-        [CDPNotificationCenter postNotificationName:CDPVideoEditorExportFail object:@"视频导出:传入的AVAsset为nil"];
+        CDPLog(@"视频压缩导出:传入的AVAsset为nil");
+        [CDPNotificationCenter postNotificationName:CDPVideoEditorExportFail object:@"视频压缩导出:传入的AVAsset为nil"];
         return;
     }
     
@@ -428,12 +437,12 @@
                 break;
             case AVAssetExportSessionStatusFailed:
                 //导出失败
-                CDPLog(@"视频导出失败error:%@",exportSession.error);
+                CDPLog(@"视频压缩导出失败error:%@",exportSession.error);
                 [CDPNotificationCenter postNotificationName:CDPVideoEditorExportFail object:[NSString stringWithFormat:@"%@",exportSession.error]];
                 break;
             case AVAssetExportSessionStatusCancelled:
                 //导出取消
-                CDPLog(@"视频导出取消error:%@",exportSession.error);
+                CDPLog(@"视频压缩导出取消error:%@",exportSession.error);
                 [CDPNotificationCenter postNotificationName:CDPVideoEditorExportCancel object:[NSString stringWithFormat:@"%@",exportSession.error]];
                 break;
             default:
