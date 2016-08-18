@@ -46,7 +46,7 @@ typedef enum{
 
 @interface CDPVideoEditor : NSObject
 
-
+#pragma mark - 视频合并
 /**
  *  合并视频(合并失败asset返回nil)
  *  originalVideoUrl 被合并入的视频URL(合并后首先播放)
@@ -61,7 +61,7 @@ typedef enum{
  */
 +(void)composeWithOriginalAVAsset:(AVAsset *)originalAsset otherAVAsset:(AVAsset *)otherAsset completion:(void(^)(BOOL success,NSString *error,AVAsset *asset,AVMutableAudioMix *audioMix,AVMutableVideoComposition *videoComposition))block;
 
-
+#pragma mark - 视频剪切
 /**
  *  剪切视频(剪切失败asset返回nil)
  *  videoUrl 视频URL
@@ -76,7 +76,23 @@ typedef enum{
  */
 +(void)trimWithAVAsset:(AVAsset *)asset start:(CGFloat)startTime end:(CGFloat)endTime completion:(void(^)(BOOL success,NSString *error,AVAsset *asset))block;
 
+#pragma mark - 视频添加水印
+/**
+ *  视频添加水印(添加失败asset返回nil)
+ *  videoUrl 视频URL
+ *  image 水印image
+ *  frame 水印相对视频位置
+ *  completion 执行结束block回调
+ */
++(void)addWatermarkWithVideoUrl:(NSURL *)videoUrl image:(UIImage *)image frame:(CGRect)frame completion:(void(^)(BOOL success,NSString *error,AVAsset *asset,AVMutableVideoComposition *videoComposition))block;
 
+/**
+ *  参考addWatermarkWithVideoUrl: image: frame: completion:类方法
+ *  AVAsset 需要添加水印的视频资源
+ */
++(void)addWatermarkWithAVAsset:(AVAsset *)asset image:(UIImage *)image frame:(CGRect)frame completion:(void(^)(BOOL success,NSString *error,AVAsset *asset,AVMutableVideoComposition *videoComposition))block;
+
+#pragma mark - 压缩导出视频
 /**
  *  压缩导出视频(在进行异步压缩导出视频时会禁止用户屏幕交互,否则可能导致失败,exportQuality质量越高所耗时间越长)
  *  videoUrl 视频URL
