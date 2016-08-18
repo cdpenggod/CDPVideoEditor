@@ -377,6 +377,123 @@
         block(YES,@"",composition);
     }
 }
+#pragma mark - 视频添加水印
++(void)addWatermarkWithVideoUrl:(NSURL *)videoUrl image:(UIImage *)image frame:(CGRect)frame completion:(void (^)(BOOL, NSString *, AVAsset *, AVMutableVideoComposition *))block{
+    if (videoUrl==nil||[videoUrl isKindOfClass:[NSNull class]]) {
+        if (block) {
+            block(NO,@"视频添加水印:传入的videoUrl为nil",nil,nil);
+        }
+        return;
+    }
+    AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:videoUrl options:nil];
+    
+    [self addWatermarkWithAVAsset:asset image:image frame:frame completion:block];
+}
++(void)addWatermarkWithAVAsset:(AVAsset *)asset image:(UIImage *)image frame:(CGRect)frame completion:(void (^)(BOOL, NSString *, AVAsset *, AVMutableVideoComposition *))block{
+    if (asset==nil||[asset isKindOfClass:[NSNull class]]) {
+        if (block) {
+            block(NO,@"视频添加水印:传入的视频资源asset为nil",nil,nil);
+        }
+        return;
+    }
+    //视频资源
+    AVAssetTrack *assetVideoTrack = [self getAssetTrackWithMediaType:AVMediaTypeVideo asset:asset];
+    //音频资源
+    AVAssetTrack *assetAudioTrack = [self getAssetTrackWithMediaType:AVMediaTypeAudio asset:asset];
+    
+    CMTime startPoint=CMTimeMakeWithSeconds(0,1);
+    
+    //composition对象主要是音频和视频组合
+    AVMutableComposition *composition=[AVMutableComposition composition];
+    NSError *error=nil;
+    
+    if(assetVideoTrack!=nil) {
+        //composition添加视频资源
+        [self insertTrack:assetVideoTrack
+            toComposition:composition
+                mediaType:AVMediaTypeVideo
+         preferredTrackID:kCMPersistentTrackID_Invalid
+          insertTimeRange:CMTimeRangeMake(startPoint,[asset duration])
+                   atTime:kCMTimeZero
+                    error:&error];
+        
+        if (error) {
+            if (block) {
+                block(NO,[NSString stringWithFormat:@"视频添加水印:视频资源出错:%@",error],nil,nil);
+            }
+            return;
+        }
+    }
+    else{
+        CDPLog(@"视频添加水印:提供的资源内部无视频资源或不支持该视频格式");
+    }
+    
+    if(assetAudioTrack != nil) {
+        //composition添加音频资源
+        [self insertTrack:assetAudioTrack
+            toComposition:composition
+                mediaType:AVMediaTypeAudio
+         preferredTrackID:kCMPersistentTrackID_Invalid
+          insertTimeRange:CMTimeRangeMake(startPoint,[asset duration])
+                   atTime:kCMTimeZero
+                    error:&error];
+        
+        if (error) {
+            if (block) {
+                block(NO,[NSString stringWithFormat:@"视频添加水印:音频资源出错:%@",error],nil,nil);
+            }
+            return;
+        }
+    }
+    else{
+        CDPLog(@"视频添加水印:提供的资源内部无音频资源或不支持该视频格式");
+    }
+    
+    //检查composition中是否有视频资源
+    AVMutableVideoComposition *videoComposition=nil;
+    if ([[composition tracksWithMediaType:AVMediaTypeVideo] count] != 0) {
+        videoComposition = [AVMutableVideoComposition videoComposition];
+        videoComposition.frameDuration=CMTimeMake(1, 30);
+        videoComposition.renderSize=assetVideoTrack.naturalSize;
+        
+        AVMutableVideoCompositionInstruction *instruction=[AVMutableVideoCompositionInstruction videoCompositionInstruction];
+        instruction.timeRange=CMTimeRangeMake(kCMTimeZero,[composition duration]);
+            
+        AVAssetTrack *videoTrack=[composition tracksWithMediaType:AVMediaTypeVideo][0];
+        AVMutableVideoCompositionLayerInstruction *layerInstruction=[AVMutableVideoCompositionLayerInstruction videoCompositionLayerInstructionWithAssetTrack:videoTrack];
+            
+        instruction.layerInstructions = @[layerInstruction];
+        videoComposition.instructions = @[instruction];
+        
+        //创建水印背景layer
+        CAShapeLayer *parentLayer=[CAShapeLayer layer];
+        parentLayer.geometryFlipped=YES;
+        parentLayer.frame=CGRectMake(0,0,videoComposition.renderSize.width,videoComposition.renderSize.height);
+        
+        CALayer *videoLayer=[CALayer layer];
+        videoLayer.frame=CGRectMake(0,0,videoComposition.renderSize.width,videoComposition.renderSize.height);
+        [parentLayer addSublayer:videoLayer];
+        
+        //创建水印        
+        CALayer *watermarkLayer=[CALayer layer];
+        watermarkLayer.contentsGravity=@"resizeAspect";
+        watermarkLayer.frame=frame;
+        watermarkLayer.contents=(__bridge id _Nullable)image.CGImage;
+        [parentLayer addSublayer:watermarkLayer];
+        
+        videoComposition.animationTool=[AVVideoCompositionCoreAnimationTool videoCompositionCoreAnimationToolWithPostProcessingAsVideoLayer:videoLayer inLayer:parentLayer];
+    }
+    else{
+        if (block) {
+            block(NO,@"视频添加水印:提供的资源内部无视频资源或不支持该视频格式,无法添加水印",asset,nil);
+        }
+        return;
+    }
+    
+    if (block) {
+        block(YES,@"",composition,videoComposition);
+    }
+}
 #pragma mark - 压缩视频导出
 +(void)exportWithVideoUrl:(nonnull NSURL *)videoUrl saveToLibrary:(BOOL)isSave exportQuality:(CDPVideoEditorExportQuality)exportQuality{
     if (videoUrl==nil||[videoUrl isKindOfClass:[NSNull class]]) {
