@@ -101,7 +101,7 @@
         
         if (audioTrack) {
             AVMutableAudioMixInputParameters *mixParameters = [AVMutableAudioMixInputParameters audioMixInputParametersWithTrack:audioTrack];
-            [mixParameters setVolumeRampFromStartVolume:1 toEndVolume:0 timeRange:CMTimeRangeMake(kCMTimeZero,CMTimeMakeWithSeconds(otherDuration,1))];
+            [mixParameters setVolumeRampFromStartVolume:1 toEndVolume:1 timeRange:CMTimeRangeMake(kCMTimeZero,CMTimeMakeWithSeconds(otherDuration,1))];
             
             audioMix=[AVMutableAudioMix audioMix];
             audioMix.inputParameters=@[mixParameters];
