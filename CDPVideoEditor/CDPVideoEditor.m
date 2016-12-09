@@ -410,6 +410,9 @@
     if (startTime<0) {
         startTime=0;
     }
+    if (duration<0) {
+        duration=0;
+    }
     
     //视频资源
     AVAssetTrack *assetVideoTrack = [self getAssetTrackWithMediaType:AVMediaTypeVideo asset:asset];
