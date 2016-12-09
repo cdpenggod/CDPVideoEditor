@@ -89,7 +89,7 @@ typedef enum{
 /**
  *  参考addWatermarkWithVideoUrl: image: frame: completion:类方法
  *  startTime 水印开始时间(小于0会自动置为0)
- *  duration 水印持续时间
+ *  duration 水印持续时间(小于0会自动置为0)
  */
 +(void)addWatermarkWithVideoUrl:(NSURL *)videoUrl image:(UIImage *)image frame:(CGRect)frame start:(CGFloat)startTime duration:(CGFloat)duration completion:(void(^)(BOOL success,NSString *error,AVAsset *asset,AVMutableVideoComposition *videoComposition))block;
 
@@ -97,7 +97,7 @@ typedef enum{
  *  参考addWatermarkWithVideoUrl: image: frame: completion:类方法
  *  AVAsset 需要添加水印的视频资源
  *  startTime 水印开始时间(小于0会自动置为0)
- *  duration 水印持续时间
+ *  duration 水印持续时间(小于0会自动置为0)
  */
 +(void)addWatermarkWithAVAsset:(AVAsset *)asset image:(UIImage *)image frame:(CGRect)frame start:(CGFloat)startTime duration:(CGFloat)duration completion:(void(^)(BOOL success,NSString *error,AVAsset *asset,AVMutableVideoComposition *videoComposition))block;
 
