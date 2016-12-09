@@ -387,15 +387,30 @@
     }
     AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:videoUrl options:nil];
     
-    [self addWatermarkWithAVAsset:asset image:image frame:frame completion:block];
+    [self addWatermarkWithAVAsset:asset image:image frame:frame start:0 duration:asset.duration.value/asset.duration.timescale completion:block];
 }
-+(void)addWatermarkWithAVAsset:(AVAsset *)asset image:(UIImage *)image frame:(CGRect)frame completion:(void (^)(BOOL, NSString *, AVAsset *, AVMutableVideoComposition *))block{
++(void)addWatermarkWithVideoUrl:(NSURL *)videoUrl image:(UIImage *)image frame:(CGRect)frame start:(CGFloat)startTime duration:(CGFloat)duration completion:(void (^)(BOOL, NSString *, AVAsset *, AVMutableVideoComposition *))block{
+    if (videoUrl==nil||[videoUrl isKindOfClass:[NSNull class]]) {
+        if (block) {
+            block(NO,@"视频添加水印:传入的videoUrl为nil",nil,nil);
+        }
+        return;
+    }
+    AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:videoUrl options:nil];
+    
+    [self addWatermarkWithAVAsset:asset image:image frame:frame start:startTime duration:duration completion:block];
+}
++(void)addWatermarkWithAVAsset:(AVAsset *)asset image:(UIImage *)image frame:(CGRect)frame start:(CGFloat)startTime duration:(CGFloat)duration completion:(void (^)(BOOL, NSString *, AVAsset *, AVMutableVideoComposition *))block{
     if (asset==nil||[asset isKindOfClass:[NSNull class]]) {
         if (block) {
             block(NO,@"视频添加水印:传入的视频资源asset为nil",nil,nil);
         }
         return;
     }
+    if (startTime<0) {
+        startTime=0;
+    }
+    
     //视频资源
     AVAssetTrack *assetVideoTrack = [self getAssetTrackWithMediaType:AVMediaTypeVideo asset:asset];
     //音频资源
@@ -457,11 +472,11 @@
         videoComposition.renderSize=assetVideoTrack.naturalSize;
         
         AVMutableVideoCompositionInstruction *instruction=[AVMutableVideoCompositionInstruction videoCompositionInstruction];
-        instruction.timeRange=CMTimeRangeMake(kCMTimeZero,[composition duration]);
-            
+        instruction.timeRange=CMTimeRangeMake(kCMTimeZero,composition.duration);
+        
         AVAssetTrack *videoTrack=[composition tracksWithMediaType:AVMediaTypeVideo][0];
         AVMutableVideoCompositionLayerInstruction *layerInstruction=[AVMutableVideoCompositionLayerInstruction videoCompositionLayerInstructionWithAssetTrack:videoTrack];
-            
+        
         instruction.layerInstructions = @[layerInstruction];
         videoComposition.instructions = @[instruction];
         
@@ -474,12 +489,24 @@
         videoLayer.frame=CGRectMake(0,0,videoComposition.renderSize.width,videoComposition.renderSize.height);
         [parentLayer addSublayer:videoLayer];
         
-        //创建水印        
+        //创建水印
         CALayer *watermarkLayer=[CALayer layer];
         watermarkLayer.contentsGravity=@"resizeAspect";
         watermarkLayer.frame=frame;
         watermarkLayer.contents=(__bridge id _Nullable)image.CGImage;
         [parentLayer addSublayer:watermarkLayer];
+        
+        //添加水印显示时间段
+        CGFloat endTime=startTime+duration;
+        CGFloat allTime=composition.duration.value/composition.duration.timescale;
+        
+        if (!(startTime<=0&&endTime>=allTime)) {
+            //水印仅在特定时间显示
+            watermarkLayer.opacity=0;
+
+            [self addAnimationToWatermarkLayer:watermarkLayer show:YES beginTime:startTime];
+            [self addAnimationToWatermarkLayer:watermarkLayer show:NO beginTime:endTime];
+        }
         
         videoComposition.animationTool=[AVVideoCompositionCoreAnimationTool videoCompositionCoreAnimationToolWithPostProcessingAsVideoLayer:videoLayer inLayer:parentLayer];
     }
@@ -587,6 +614,18 @@
     }];
 }
 #pragma mark - 其他相关方法
+//给水印添加显示隐藏效果
++(void)addAnimationToWatermarkLayer:(CALayer *)layer show:(BOOL)isShow beginTime:(CGFloat)beginTime{
+    CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"opacity"];
+    [animation setDuration:0];
+    [animation setFromValue:[NSNumber numberWithFloat:(isShow)?0.0:1.0]];
+    [animation setToValue:[NSNumber numberWithFloat:(isShow)?1.0:0.0]];
+    [animation setBeginTime:(beginTime==0)?0.25:beginTime];//(从0开始显示的话系统会不显示,出现bug,必须拖延一点时间才正常,可能是需要反应时间吧)
+    animation.autoreverses=NO;
+    animation.removedOnCompletion=NO;
+    animation.fillMode=kCAFillModeForwards;
+    [layer addAnimation:animation forKey:nil];
+}
 //根据videoTrack获得视频方向
 +(UIImageOrientation)getUIImageOrientationWithAssetTrack:(nonnull AVAssetTrack *)assetTrack{
     CGAffineTransform transform=assetTrack.preferredTransform;
