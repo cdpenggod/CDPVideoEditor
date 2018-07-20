@@ -57,7 +57,7 @@ typedef enum{
 +(void)composeWithOriginalVideoUrl:(NSURL *)originalVideoUrl otherVideoUrl:(NSURL *)otherVideoUrl completion:(void(^)(BOOL success,NSString *error,AVAsset *asset,AVMutableAudioMix *audioMix,AVMutableVideoComposition *videoComposition))block;
 /**
  *  参考composeWithOriginalVideoUrl: otherVideoUrl: completion:类方法
- *  AVAsset 需要剪切的视频资源
+ *  AVAsset 需要合并的视频资源
  */
 +(void)composeWithOriginalAVAsset:(AVAsset *)originalAsset otherAVAsset:(AVAsset *)otherAsset completion:(void(^)(BOOL success,NSString *error,AVAsset *asset,AVMutableAudioMix *audioMix,AVMutableVideoComposition *videoComposition))block;
 
@@ -100,6 +100,22 @@ typedef enum{
  *  duration 水印持续时间(小于0会自动置为0)
  */
 +(void)addWatermarkWithAVAsset:(AVAsset *)asset image:(UIImage *)image frame:(CGRect)frame start:(CGFloat)startTime duration:(CGFloat)duration completion:(void(^)(BOOL success,NSString *error,AVAsset *asset,AVMutableVideoComposition *videoComposition))block;
+
+#pragma mark - 视频改变背景乐
+/**
+ *  改变视频背景乐(失败asset返回nil)
+ *  videoUrl 被改变的视频URL
+ *  audioUrl 要改变进video的音频URL(1.可传入视频,内部只会取音频资源2.最终获得的video如果播放完,该背景乐即使时长大于视频,也将随视频一起停止)
+ *  completion 执行结束block回调
+ *  keepOriginAudio 是否保持视频原背景乐
+ */
++(void)addAudioWithVideoUrl:(NSURL *)videoUrl audioUrl:(NSURL *)audioUrl keepOriginAudio:(BOOL)keepOriginAudio completion:(void(^)(BOOL success,NSString *error,AVAsset *asset,AVMutableAudioMix *audioMix,AVMutableVideoComposition *videoComposition))block;
+
+/**
+ *  参考addAudioWithVideoUrl: audioUrl: keepOriginAudio: completion:类方法
+ *  AVAsset 需要改变的资源
+ */
++(void)addAudioWithVideoAVAsset:(AVAsset *)videoAsset audioAVAsset:(AVAsset *)audioAsset keepOriginAudio:(BOOL)keepOriginAudio completion:(void(^)(BOOL success,NSString *error,AVAsset *asset,AVMutableAudioMix *audioMix,AVMutableVideoComposition *videoComposition))block;
 
 #pragma mark - 压缩导出视频
 /**

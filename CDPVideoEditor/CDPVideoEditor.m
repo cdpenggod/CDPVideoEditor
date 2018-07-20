@@ -524,6 +524,155 @@
         block(YES,@"",composition,videoComposition);
     }
 }
+#pragma mark - 视频改变背景乐
++(void)addAudioWithVideoUrl:(NSURL *)videoUrl audioUrl:(NSURL *)audioUrl keepOriginAudio:(BOOL)keepOriginAudio completion:(void (^)(BOOL, NSString *, AVAsset *, AVMutableAudioMix *, AVMutableVideoComposition *))block{
+    
+    if (videoUrl==nil||[videoUrl isKindOfClass:[NSNull class]]||audioUrl==nil||[audioUrl isKindOfClass:[NSNull class]]) {
+        if (block) {
+            block(NO,@"视频改变背景乐:传入的videoUrl或audioUrl为nil",nil,nil,nil);
+        }
+        return;
+    }
+    
+    AVURLAsset *videoAsset = [[AVURLAsset alloc] initWithURL:videoUrl options:nil];
+    AVURLAsset *audioAsset = [[AVURLAsset alloc] initWithURL:audioUrl options:nil];
+    
+    [self addAudioWithVideoAVAsset:videoAsset audioAVAsset:audioAsset keepOriginAudio:keepOriginAudio completion:block];
+}
++(void)addAudioWithVideoAVAsset:(AVAsset *)videoAsset audioAVAsset:(AVAsset *)audioAsset keepOriginAudio:(BOOL)keepOriginAudio completion:(void (^)(BOOL, NSString *, AVAsset *, AVMutableAudioMix *, AVMutableVideoComposition *))block{
+    
+    if (videoAsset==nil||[videoAsset isKindOfClass:[NSNull class]]||audioAsset==nil||[audioAsset isKindOfClass:[NSNull class]]) {
+        if (block) {
+            block(NO,@"视频改变背景乐:传入的videoAsset或audioAsset为nil",nil,nil,nil);
+        }
+        return;
+    }
+    
+    CGFloat videoDuration=CMTimeGetSeconds([videoAsset duration]);
+    CGFloat audioDuration=CMTimeGetSeconds([audioAsset duration]);
+    
+    //视频资源
+    AVAssetTrack *originalVideoTrack = [self getAssetTrackWithMediaType:AVMediaTypeVideo asset:videoAsset];
+    
+    //背景乐资源
+    AVAssetTrack *originalVideoAudioTrack = (keepOriginAudio)?[self getAssetTrackWithMediaType:AVMediaTypeAudio asset:videoAsset]:nil;
+    AVAssetTrack *newAudioTrack = [self getAssetTrackWithMediaType:AVMediaTypeAudio asset:audioAsset];
+    
+    AVMutableComposition *composition=[AVMutableComposition composition];
+    NSError *error=nil;
+    
+    //音频集合
+    AVMutableAudioMix *audioMix=nil;
+    
+    //视频原背景音频资源
+    if (originalVideoAudioTrack!=nil) {
+        [self insertTrack:originalVideoAudioTrack
+            toComposition:composition
+                mediaType:AVMediaTypeAudio
+         preferredTrackID:kCMPersistentTrackID_Invalid
+          insertTimeRange:CMTimeRangeMake(kCMTimeZero,CMTimeMakeWithSeconds(videoDuration,1))
+                   atTime:kCMTimeZero
+                    error:&error];
+        
+        if (error) {
+            if (block) {
+                block(NO,[NSString stringWithFormat:@"视频原背景乐资源出错:%@",error],nil,nil,nil);
+            }
+            return;
+        }
+    }
+    else if (keepOriginAudio) {
+        CDPLog(@"视频改变背景乐:提供的video资源内部无音频资源或不支持该视频格式");
+    }
+    
+    //新背景乐音频资源
+    if (newAudioTrack!=nil) {
+        AVMutableCompositionTrack *audioTrack=[self insertTrack:newAudioTrack
+                                                  toComposition:composition
+                                                      mediaType:AVMediaTypeAudio
+                                               preferredTrackID:kCMPersistentTrackID_Invalid
+                                                insertTimeRange:CMTimeRangeMake(kCMTimeZero,CMTimeMakeWithSeconds(audioDuration,1))
+                                                         atTime:kCMTimeZero
+                                                          error:&error];
+        
+        if (error) {
+            if (block) {
+                block(NO,[NSString stringWithFormat:@"添加视频新背景乐音频资源出错:%@",error],nil,nil,nil);
+            }
+            return;
+        }
+        
+        if (audioTrack) {
+            AVMutableAudioMixInputParameters *mixParameters = [AVMutableAudioMixInputParameters audioMixInputParametersWithTrack:audioTrack];
+            [mixParameters setVolumeRampFromStartVolume:1 toEndVolume:1 timeRange:CMTimeRangeMake(kCMTimeZero,CMTimeMakeWithSeconds(audioDuration,1))];
+            
+            audioMix=[AVMutableAudioMix audioMix];
+            audioMix.inputParameters=@[mixParameters];
+        }
+    }
+    else{
+        CDPLog(@"视频改变背景乐:提供的audio资源内部无音频资源或不支持该媒体格式");
+    }
+    
+    //视频集合
+    AVMutableVideoComposition *videoComposition=nil;
+    
+    AVMutableVideoCompositionLayerInstruction *originalLayerInstruction=nil;
+    
+//    CGAffineTransform originalTransform;
+//
+//    UIImageOrientation originalOrientation=UIImageOrientationUp;
+    
+    //original视频资源
+    if (originalVideoTrack!=nil) {
+        AVMutableCompositionTrack *videoTrack=[self insertTrack:originalVideoTrack
+                                                  toComposition:composition
+                                                      mediaType:AVMediaTypeVideo
+                                               preferredTrackID:kCMPersistentTrackID_Invalid
+                                                insertTimeRange:CMTimeRangeMake(kCMTimeZero,CMTimeMakeWithSeconds(videoDuration,1))
+                                                         atTime:kCMTimeZero
+                                                          error:&error];
+        
+        if (error) {
+            if (block) {
+                block(NO,[NSString stringWithFormat:@"视频改变背景乐时添加video视频资源出错:%@",error],nil,nil,nil);
+            }
+            return;
+        }
+        
+        if (videoTrack) {
+            originalLayerInstruction = [AVMutableVideoCompositionLayerInstruction videoCompositionLayerInstructionWithAssetTrack:videoTrack];
+            
+//            //视频ImageOrientation方向
+//            originalOrientation=[self getUIImageOrientationWithAssetTrack:originalVideoTrack];
+//
+//            //修正视频方向
+//            originalTransform=[self getTransformWithAssetTrack:originalVideoTrack imageOrientation:originalOrientation];
+        }
+    }
+    else{
+        CDPLog(@"视频改变背景乐:提供的video资源内部无视频资源或不支持该视频格式");
+    }
+    
+    //判断是否有LayerInstruction视频资源
+    if (originalLayerInstruction) {
+        AVMutableVideoCompositionInstruction *instruction = [AVMutableVideoCompositionInstruction videoCompositionInstruction];
+        instruction.timeRange=CMTimeRangeMake(kCMTimeZero,CMTimeMakeWithSeconds(videoDuration,1));
+        instruction.layerInstructions=@[originalLayerInstruction];
+        
+        videoComposition = [AVMutableVideoComposition videoComposition];
+        videoComposition.instructions=[NSArray arrayWithObject:instruction];
+        videoComposition.frameDuration = CMTimeMake(1,30);
+        videoComposition.renderSize = CGSizeMake(originalVideoTrack.naturalSize.width,originalVideoTrack.naturalSize.height);
+    }
+    else{
+        CDPLog(@"视频改变背景:提供的video资源内部无视频资源,可能不支持媒体格式");
+    }
+    
+    if (block) {
+        block(YES,@"",composition,audioMix,videoComposition);
+    }
+}
 #pragma mark - 压缩视频导出
 +(void)exportWithVideoUrl:(nonnull NSURL *)videoUrl saveToLibrary:(BOOL)isSave exportQuality:(CDPVideoEditorExportQuality)exportQuality{
     if (videoUrl==nil||[videoUrl isKindOfClass:[NSNull class]]) {
@@ -572,8 +721,9 @@
     [[UIApplication sharedApplication] delegate].window.userInteractionEnabled=NO;
     
     [exportSession exportAsynchronouslyWithCompletionHandler:^(void){
-        [[UIApplication sharedApplication] delegate].window.userInteractionEnabled=YES;
-        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[UIApplication sharedApplication] delegate].window.userInteractionEnabled=YES;
+        });
         switch (exportSession.status) {
             case AVAssetExportSessionStatusCompleted:
                 //导出成功

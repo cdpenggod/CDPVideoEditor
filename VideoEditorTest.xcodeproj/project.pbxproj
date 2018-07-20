@@ -445,6 +445,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = VideoEditorTest/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -457,6 +458,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = VideoEditorTest/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -530,6 +532,7 @@
 				5EFF2C801D4DEF1A0018DB6F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		5EFF2C811D4DEF1A0018DB6F /* Build configuration list for PBXNativeTarget "VideoEditorTestTests" */ = {
 			isa = XCConfigurationList;
@@ -538,6 +541,7 @@
 				5EFF2C831D4DEF1A0018DB6F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		5EFF2C841D4DEF1A0018DB6F /* Build configuration list for PBXNativeTarget "VideoEditorTestUITests" */ = {
 			isa = XCConfigurationList;
@@ -546,6 +550,7 @@
 				5EFF2C861D4DEF1A0018DB6F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
