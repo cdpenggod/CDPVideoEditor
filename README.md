@@ -12,6 +12,9 @@ An video editor,can trim a video or compose two video, and export video to the l
 ## Add watermark to video视频添加水印
 +(void)addWatermarkWithVideoUrl:(NSURL *)videoUrl image:(UIImage *)image frame:(CGRect)frame completion:(void(^)(BOOL success,NSString *error,AVAsset *asset,AVMutableVideoComposition *videoComposition))block;
 
+## Add music to video视频添加改变背景乐
++(void)addAudioWithVideoUrl:(NSURL *)videoUrl audioUrl:(NSURL *)audioUrl keepOriginAudio:(BOOL)keepOriginAudio completion:(void(^)(BOOL success,NSString *error,AVAsset *asset,AVMutableAudioMix *audioMix,AVMutableVideoComposition *videoComposition))block;
+
 ## Compressed and Export video视频压缩导出
 +(void)exportWithVideoUrl:(nonnull NSURL *)videoUrl saveToLibrary:(BOOL)isSave exportQuality:(CDPVideoEditorExportQuality)exportQuality;
 
